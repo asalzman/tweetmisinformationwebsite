@@ -1,0 +1,145 @@
+<DOCTYPE html>
+<html>
+<head>
+<title>Disinformation Tweet Search</title>
+<script>
+	var counter = 1;
+	var numPages;
+	function runAPI(x){
+
+
+		x.preventDefault();
+		var xmlhttp = new XMLHttpRequest();
+		var url = "https://disinformation-api.dpccdn.net/v1/search?query=" + document.getElementById("search").value;
+
+		xmlhttp.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+        		var myArr = JSON.parse(this.responseText);
+        		document.getElementById("p1").innerHTML = "";
+       		 	myFunction(myArr);
+       		 }
+       		 }
+
+  			xmlhttp.open("GET", url, true);
+			xmlhttp.send();
+
+		function myFunction(arr) {
+		    var out = "";
+
+
+		    for(var i = 0; i < Object.keys(arr.results).length; i++) {
+		    	var userName = arr.results[i].screen_name;
+		    	if (userName.length == 64){
+		    		userName = "Private User";
+		    	}
+		    	var page = arr.page;
+		        out += '<tr><td><font face = "tahoma" size = "4.5"><font color = "#0032a3"><b>@' + userName + ": </b></font><a href = \"tweetinfopage2.html?query=" + document.getElementById("search").value + "&page=" + page +"&resultNum=" + i + "\">" + arr.results[i].text + '</a></font></td></tr>';
+		    }
+
+    		document.getElementById("table1").innerHTML = out;
+    		numPages = arr.pages;
+    	}
+	}
+    function newPage(){
+    	var xmlhttp = new XMLHttpRequest();
+    	counter = counter + 1;
+    	if (numPages > counter) {
+    		var url = "https://disinformation-api.dpccdn.net/v1/search?query=" + document.getElementById("search").value + "&page=" + counter;
+    	}
+    	xmlhttp.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+        		var myArr = JSON.parse(this.responseText);
+       		 	myFunction(myArr);}
+       		 }
+
+  			xmlhttp.open("GET", url, true);
+			xmlhttp.send();
+
+		function myFunction(arr) {
+
+		    var out = "";
+
+		    for(var i = 0; i < Object.keys(arr.results).length; i++) {
+		    	var userName = arr.results[i].screen_name;
+		    	if (userName.length == 64){
+		    		userName = "Private User";
+		    	}
+		        var page = arr.page;
+		        out += '<tr><td><font face = "tahoma" size = "6" color = "#0032a3"><b>' + userName + ": </b></font><a href = \"tweetinfopage2.html?query=" + document.getElementById("search").value + "&page=" + page +"&resultNum=" + i + "\">" + arr.results[i].text + '</a></font></td></tr>';
+		    }
+
+    		document.getElementById("table1").innerHTML += out;
+    	}
+    }
+    function checkScroll(){
+    	var scrollTop = document.body.scrollTop;
+		var windowHeight = window.innerHeight;
+		var body = document.body;
+    	html = document.documentElement;
+		var height = Math.max( body.scrollHeight, body.offsetHeight, 
+        html.clientHeight, html.scrollHeight, html.offsetHeight );
+		var bodyHeight = height - windowHeight;
+		var scrollPercentage = Math.floor((scrollTop / bodyHeight)*10);
+		if(scrollPercentage > 9) {
+			  newPage();
+		}
+    }
+
+    window.addEventListener("scroll", function() {
+    checkScroll(); }, false);
+</script>
+<style>
+body {
+	height:auto; overflow:auto;
+}
+input{
+	width: 100%;
+	font-size:25;
+	padding: 15px 30px;
+	background-color: #0032a3;
+	border-color: none;
+	border-width: thin;
+	color: white;
+	border-radius: 30px;
+	text-align: center;
+}
+input:focus {
+  outline: none;
+}
+button{
+	visibility:hidden;
+}
+td{
+	padding: 20px;
+}
+a{text-decoration : none; color: #0032a3; }
+
+
+p.p1{
+	width: 90%;
+	text-align: center;
+	margin: auto;
+	color: #0032a3;
+	padding-top: 22px
+}
+
+table.tb2{
+		color: #0032a3;
+}
+
+</style>
+</head>
+<body>
+	<table width = 100% class = "tb2">
+		<tr><td align = "left"><font face = "tahoma" size = "5">TITLE</font></td><td align = "right"><font face = "tahoma" size = "5"><a href = "aboutpage.html">ABOUT</a></font></td></tr></font>
+	</table>
+	<form>
+		<input type="text" id="search" autofocus><br>
+		<button onclick="runAPI(event)">Submit</button></font></center>
+	</form>
+	<p class = "p1" id = "p1"><font face = "tahoma" size = "6">
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</font></p>
+<div id="id01" class="results"><table id ="table1"></table></div>
+</body>
+</html>
